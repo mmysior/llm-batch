@@ -21,7 +21,7 @@ dev = [
 ]
 
 [project.scripts]
-batch-cli = "batch_cli:main"
+batch-cli = "batch_cli.cli:cli"
 
 [build-system]
 requires = ["hatchling"]
