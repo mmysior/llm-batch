@@ -1,0 +1,22 @@
+[project]
+name = "batch-cli"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "mmysior", email = "mysior.marek@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
+
+[project.scripts]
+batch-cli = "batch_cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
