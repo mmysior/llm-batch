@@ -7,7 +7,13 @@ authors = [
     { name = "mmysior", email = "mysior.marek@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "anthropic>=0.50.0",
+    "click>=8.1.8",
+    "openai>=1.76.0",
+    "pillow>=11.2.1",
+    "python-dotenv>=1.1.0",
+]
 
 [dependency-groups]
 dev = [
