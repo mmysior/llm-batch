@@ -17,4 +17,7 @@
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.languageServer": "Pylance",
     // Linting
+    "ruff.path": [
+        "$HOME/.local/bin/ruff" // Use ruff via tools in uv
+    ],
 }
