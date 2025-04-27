@@ -27,3 +27,12 @@ class OpenAIBatch(BaseModel):
     method: Literal["POST"] = "POST"
     url: str = "/v1/chat/completions"
     body: Dict[str, Any]
+
+
+class OutputModel(BaseModel):
+    custom_id: str
+    type: str
+    model: str
+    response: str
+    input_tokens: int
+    output_tokens: int
