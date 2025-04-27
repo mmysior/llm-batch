@@ -2,9 +2,10 @@ import json
 from typing import List
 
 import pandas as pd
+import yaml
 from pydantic import BaseModel
 
-from batch_cli.models.schemas import OutputModel
+from batch_cli.models.schemas import BatchConfig, OutputModel
 
 
 def load_jsonl(file_path: str) -> list[dict]:
@@ -27,3 +28,9 @@ def append_to_jsonl(responses: List[BaseModel], output_path: str) -> None:
 
 def convert_to_df(models: List[OutputModel]) -> pd.DataFrame:
     return pd.DataFrame([m.model_dump() for m in models])
+
+
+def load_config(config_file: str) -> BatchConfig:
+    with open(config_file, "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    return BatchConfig(**config)
