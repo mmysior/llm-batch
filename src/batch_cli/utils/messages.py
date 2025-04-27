@@ -1,47 +1,67 @@
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import List, Optional
 
+from batch_cli.models.schemas import Message
 from batch_cli.utils.images import encode_image
 
-type MessageRole = Literal["system", "user", "assistant", "developer"]
-type MessageContent = Union[str, Dict[str, Any], List[Dict[str, Any]]]
-type Message = Dict[str, Union[MessageRole, MessageContent]]
+
+def create_messages(
+    user_message: str, system_message: Optional[str] = None
+) -> List[Message]:
+    messages: List[Message] = []
+    if system_message:
+        messages.append(Message(role="system", content=system_message))
+    messages.append(Message(role="user", content=user_message))
+    return messages
 
 
-def create_message(question: str) -> List[Message]:
-    return [{"role": "user", "content": question}]
+def create_openai_messages(
+    question: str,
+    image_path: Optional[Path] = None,
+    system_message: Optional[str] = None,
+) -> List[Message]:
+    messages: List[Message] = []
+    if system_message:
+        messages.append(Message(role="system", content=system_message))
 
-
-def create_openai_message(question: str, image_path: Optional[Path] = None) -> List[Message]:
     if image_path is None:
-        return create_message(question)
+        messages.append(Message(role="user", content=question))
+        return messages
 
     media_type, base64_image = encode_image(image_path)
-
-    return [
-        {
-            "role": "user",
-            "content": [
+    messages.append(
+        Message(
+            role="user",
+            content=[
                 {"type": "text", "text": question},
                 {
                     "type": "image_url",
                     "image_url": {"url": f"data:{media_type};base64,{base64_image}"},
                 },
             ],
-        }
-    ]
+        )
+    )
+    return messages
 
 
-def create_anthropic_message(question: str, image_path: Optional[Path] = None) -> List[Message]:
+def create_anthropic_messages(
+    question: str,
+    image_path: Optional[Path] = None,
+    system_message: Optional[str] = None,
+) -> List[Message]:
+    messages: List[Message] = []
+    if system_message:
+        messages.append(Message(role="system", content=system_message))
+
     if image_path is None:
-        return create_message(question)
+        messages.append(Message(role="user", content=question))
+        return messages
 
     media_type, base64_image = encode_image(image_path)
-
-    return [
-        {
-            "role": "user",
-            "content": [
+    messages.append(
+        Message(
+            role="user",
+            content=[
                 {"type": "text", "text": question},
                 {
                     "type": "image",
@@ -52,5 +72,6 @@ def create_anthropic_message(question: str, image_path: Optional[Path] = None) -
                     },
                 },
             ],
-        }
-    ]
+        )
+    )
+    return messages
