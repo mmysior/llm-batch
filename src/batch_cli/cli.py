@@ -61,13 +61,16 @@ def run_anthropic(file_path: str) -> None:
 @click.command(name="run")
 @click.argument("file_path", type=click.Path(exists=True))
 @click.option("--interval", type=int, default=100)
-def run(file_path: str, interval: int) -> None:
+@click.option(
+    "--output-dir", type=click.Path(file_okay=False, exists=True), default="."
+)
+def run(file_path: str, interval: int, output_dir: str) -> None:
     """
     Run a batch of OpenAI requests from a JSONL file with Ollama and save the responses to an output file.
     Use --interval to control how often results are written.
     """
     batch_id = str(uuid4().hex)
-    output_path = f"batch_{batch_id}_output.jsonl"
+    output_path = os.path.join(output_dir, f"batch_{batch_id}_output.jsonl")
     responses = []
     count = 0
 
@@ -93,7 +96,9 @@ def run(file_path: str, interval: int) -> None:
 
 @click.command(name="parse")
 @click.argument("input_path", type=click.Path(exists=True))
-@click.argument("output_dir", type=click.Path(file_okay=False, exists=False))
+@click.argument(
+    "output_dir", type=click.Path(file_okay=False, exists=False), default="."
+)
 def parse(input_path: str, output_dir: str) -> str:
     models = parse_batch_jsonl(input_path)
     df = convert_to_df(models)
