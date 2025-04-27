@@ -1,4 +1,5 @@
 import logging
+import os
 from uuid import uuid4
 
 import click
@@ -91,13 +92,15 @@ def run(file_path: str, interval: int) -> None:
 
 
 @click.command(name="parse")
-@click.argument("file_path", type=click.Path(exists=True))
-def parse(file_path: str) -> str:
-    models = parse_batch_jsonl(file_path)
+@click.argument("input_path", type=click.Path(exists=True))
+@click.argument("output_dir", type=click.Path(file_okay=False, exists=False))
+def parse(input_path: str, output_dir: str) -> str:
+    models = parse_batch_jsonl(input_path)
     df = convert_to_df(models)
-    output_path = file_path.rsplit(".", 1)[0] + ".csv"
-    df.to_csv(output_path, index=False, encoding="utf-8", sep=";")
-    return f"File saved to {output_path}"
+    input_filename = os.path.splitext(os.path.basename(input_path))[0]
+    csv_path = os.path.join(output_dir, f"{input_filename}.csv")
+    df.to_csv(csv_path, index=False, encoding="utf-8", sep=";")
+    return f"File saved to {csv_path}"
 
 
 # ------------------------------------------------------------
