@@ -1,4 +1,5 @@
 import logging
+import os
 from uuid import uuid4
 
 import click
@@ -8,7 +9,13 @@ from dotenv import load_dotenv
 
 from batch_cli.models.schemas import OpenAIBatch
 from batch_cli.pipelines.inference import process_request
-from batch_cli.utils.general import append_to_jsonl, load_jsonl, load_jsonl_generator
+from batch_cli.pipelines.post import parse_batch_jsonl
+from batch_cli.utils.general import (
+    append_to_jsonl,
+    convert_to_df,
+    load_jsonl,
+    load_jsonl_generator,
+)
 
 load_dotenv()
 logging.basicConfig(
@@ -84,8 +91,21 @@ def run(file_path: str, interval: int) -> None:
     logger.info("Results saved to %s", output_path)
 
 
+@click.command(name="parse")
+@click.argument("input_path", type=click.Path(exists=True))
+@click.argument("output_dir", type=click.Path(file_okay=False, exists=False))
+def parse(input_path: str, output_dir: str) -> str:
+    models = parse_batch_jsonl(input_path)
+    df = convert_to_df(models)
+    input_filename = os.path.splitext(os.path.basename(input_path))[0]
+    csv_path = os.path.join(output_dir, f"{input_filename}.csv")
+    df.to_csv(csv_path, index=False, encoding="utf-8", sep=";")
+    return f"File saved to {csv_path}"
+
+
 # ------------------------------------------------------------
 # Add commands to the CLI
 # ------------------------------------------------------------
 cli.add_command(run_anthropic)
 cli.add_command(run)
+cli.add_command(parse)
