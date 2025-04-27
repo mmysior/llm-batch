@@ -1,5 +1,3 @@
-from typing import List
-
 from batch_cli.models.schemas import OutputModel
 from batch_cli.utils.general import load_jsonl
 
@@ -69,17 +67,16 @@ def parse_openai_jsonl(file_path: str) -> list[OutputModel]:
     return results
 
 
-def parse_batch_jsonl(path: str) -> List[OutputModel]:
+def parse_batch_jsonl(path: str) -> list[OutputModel]:
     lines = list(load_jsonl(path))
     if not lines:
         raise ValueError(f"Empty or invalid JSONL file: {path}")
 
-    try:
-        body = lines[0].get("response", {}).get("body", {})
-        return (
-            parse_anthropic_jsonl(path)
-            if "content" in body
-            else parse_openai_jsonl(path)
-        )
-    except Exception:
-        raise ValueError(f"Failed to determine provider for {path}")
+    first = lines[0]
+    # Anthropic: has "result" key with "message" or "type"
+    if "result" in first:
+        return parse_anthropic_jsonl(path)
+    # OpenAI: has "response" key with "body"
+    if "response" in first and "body" in first["response"]:
+        return parse_openai_jsonl(path)
+    raise ValueError(f"Failed to determine provider for {path}")
