@@ -68,10 +68,6 @@ def run_anthropic(file_path: str) -> None:
     "--verbose", "-v", is_flag=True, default=False, help="Enable verbose logging"
 )
 def run(file_path: str, interval: int, output_dir: str, verbose: bool) -> None:
-    """
-    Run a batch of OpenAI requests from a JSONL file with Ollama and save the responses to an output file.
-    Use --interval to control how often results are written.
-    """
     if verbose:
         logging.basicConfig(
             level=logging.INFO,
@@ -85,20 +81,17 @@ def run(file_path: str, interval: int, output_dir: str, verbose: bool) -> None:
             handlers=[logging.StreamHandler()],
         )
 
-    batch_id = str(uuid4().hex)
-    output_path = os.path.join(output_dir, f"batch_{batch_id}_output.jsonl")
-    responses = []
-    count = 0
+    batch_id: str = str(uuid4().hex)
+    output_path: str = os.path.join(output_dir, f"batch_{batch_id}_output.jsonl")
+    responses: list = []
+    count: int = 0
 
-    # Get total count for tqdm
-    total_items = sum(1 for _ in load_jsonl_generator(file_path))
+    total_items: int = sum(1 for _ in load_jsonl_generator(file_path))
 
     logger.info("Starting batch %s", batch_id)
 
-    # Create progress bar
     pbar = tqdm(total=total_items, desc="Processing batch", unit="requests")
 
-    # Re-open the file for actual processing
     for item in load_jsonl_generator(file_path):
         request = OpenAIBatch(**item)
         response = process_request(request, batch_id)
@@ -106,13 +99,11 @@ def run(file_path: str, interval: int, output_dir: str, verbose: bool) -> None:
         count += 1
         pbar.update(1)
 
-        # Save in batches based on the interval
         if count % interval == 0:
             append_to_jsonl(responses, output_path)
-            responses = []  # Clear memory after saving
+            responses = []
             pbar.set_description(f"Processing batch (saved {count} responses)")
 
-    # Save any remaining responses
     if responses:
         append_to_jsonl(responses, output_path)
 
