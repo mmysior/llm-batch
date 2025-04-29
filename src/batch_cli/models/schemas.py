@@ -24,11 +24,21 @@ class BatchResponse(BaseModel):
     error: Optional[Any] = None
 
 
+class Body(BaseModel):
+    messages: List[MessageModel]
+    model: str
+    temperature: float
+    max_tokens: int
+
+    class Config:
+        extra = "allow"
+
+
 class OpenAIBatch(BaseModel):
     custom_id: str
     method: Literal["POST"] = "POST"
     url: str = "/v1/chat/completions"
-    body: Dict[str, Any]
+    body: Body
 
 
 class AnthropicBatch(BaseModel):
