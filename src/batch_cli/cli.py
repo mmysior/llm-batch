@@ -124,10 +124,10 @@ def parse(input_path: str, output_dir: str) -> str:
 
 
 @click.command(name="create")
-@click.argument("csv_path", type=click.Path(exists=True))
+@click.argument("input_path", type=click.Path(exists=True))
 @click.argument("config_file", type=click.Path(exists=True))
 @click.argument("output_path", type=click.Path(exists=False))
-def create(csv_path: str, config_file: str, output_path: str) -> str:
+def create(input_path: str, config_file: str, output_path: str) -> str:
     config = load_config(config_file)
     used_kwargs = config.params.model_dump()
     # Handle response_model unpacking if present in config
@@ -150,9 +150,17 @@ def create(csv_path: str, config_file: str, output_path: str) -> str:
                 "name": config.json_schema.get("name", "response_model"),
             }
 
-    with open(csv_path, "r", encoding="utf-8") as csv_file:
-        reader = csv.DictReader(csv_file)
-        questions = [Question(**row) for row in reader]
+    questions: list[Question] = []
+    if input_path.endswith(".csv"):
+        with open(input_path, "r", encoding="utf-8") as csv_file:
+            reader = csv.DictReader(csv_file)
+            questions = [Question(**row) for row in reader]
+    elif input_path.endswith(".json"):
+        with open(input_path, "r", encoding="utf-8") as json_file:
+            data = json.load(json_file)
+            questions = [Question(**item) for item in data]
+    else:
+        raise ValueError("Input file must be a .csv or .json file.")
 
     batch_content = create_batch(
         questions=questions,
