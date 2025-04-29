@@ -53,6 +53,7 @@ class BatchConfig(BaseModel):
     max_tokens: int
     n_answers: int = 1
     system_message: Optional[str] = None
+    response_model: Optional[dict] = None
     kwargs: Optional[OptionalParams] = None
 
 
