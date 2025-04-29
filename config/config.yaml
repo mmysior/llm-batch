@@ -15,6 +15,59 @@ max_tokens: 8196 # Maximum number of tokens to generate, required by Anthropic
 #   Answer questions clearly and concisely.
 #   When code is requested, provide well-structured, type-hinted solutions.
 
+# Response Model for structured output
+response_model:
+  # Format for OpenAI
+  response_format:
+    type: json_schema
+    json_schema:
+      name: response_model
+      schema:
+        type: object
+        properties:
+          action:
+            type: string
+            description: Short description of the applied action
+          positive_effect:
+            type: string
+            description: The positive effect of the action
+          negative_effect:
+            type: string
+            description: The negative effect of the action
+        required:
+          - action
+          - positive_effect
+          - negative_effect
+        additionalProperties: false
+      strict: true
+
+  # Format for Anthropic
+  tools:
+    - name: response_model
+      description: Respond with a JSON object describing an action with its positive and negative effects.
+      input_schema:
+        type: object
+        properties:
+          action:
+            type: string
+            description: Short description of the applied action
+          positive_effect:
+            type: string
+            description: The positive effect of the action
+          negative_effect:
+            type: string
+            description: The negative effect of the action
+        required:
+          - action
+          - positive_effect
+          - negative_effect
+        additionalProperties: false
+  tool_choice:
+    type: tool
+    name: response_model
+
+
+
 # Optional parameters passed directly to the API
 # kwargs:
 #   top_p: 0.9
