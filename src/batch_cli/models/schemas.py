@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 type OptionalParams = Dict[str, Any]
 
 
-class Message(BaseModel):
+class MessageModel(BaseModel):
     role: str
     content: Union[str, List[Dict[str, Any]]]
 

@@ -1,17 +1,17 @@
 from pathlib import Path
 from typing import List, Optional
 
-from batch_cli.models.schemas import Message
+from batch_cli.models.schemas import MessageModel
 from batch_cli.utils.images import encode_image
 
 
 def create_messages(
     user_message: str, system_message: Optional[str] = None
-) -> List[Message]:
-    messages: List[Message] = []
+) -> List[MessageModel]:
+    messages: List[MessageModel] = []
     if system_message:
-        messages.append(Message(role="system", content=system_message))
-    messages.append(Message(role="user", content=user_message))
+        messages.append(MessageModel(role="system", content=system_message))
+    messages.append(MessageModel(role="user", content=user_message))
     return messages
 
 
@@ -19,18 +19,18 @@ def create_openai_messages(
     question: str,
     image_path: Optional[Path] = None,
     system_message: Optional[str] = None,
-) -> List[Message]:
-    messages: List[Message] = []
+) -> List[MessageModel]:
+    messages: List[MessageModel] = []
     if system_message:
-        messages.append(Message(role="system", content=system_message))
+        messages.append(MessageModel(role="system", content=system_message))
 
     if image_path is None:
-        messages.append(Message(role="user", content=question))
+        messages.append(MessageModel(role="user", content=question))
         return messages
 
     media_type, base64_image = encode_image(image_path)
     messages.append(
-        Message(
+        MessageModel(
             role="user",
             content=[
                 {"type": "text", "text": question},
@@ -48,18 +48,18 @@ def create_anthropic_messages(
     question: str,
     image_path: Optional[Path] = None,
     system_message: Optional[str] = None,
-) -> List[Message]:
-    messages: List[Message] = []
+) -> List[MessageModel]:
+    messages: List[MessageModel] = []
     if system_message:
-        messages.append(Message(role="system", content=system_message))
+        messages.append(MessageModel(role="system", content=system_message))
 
     if image_path is None:
-        messages.append(Message(role="user", content=question))
+        messages.append(MessageModel(role="user", content=question))
         return messages
 
     media_type, base64_image = encode_image(image_path)
     messages.append(
-        Message(
+        MessageModel(
             role="user",
             content=[
                 {"type": "text", "text": question},
