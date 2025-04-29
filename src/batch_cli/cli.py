@@ -128,10 +128,8 @@ def parse(input_path: str, output_dir: str) -> str:
 @click.command(name="create")
 @click.argument("csv_path", type=click.Path(exists=True))
 @click.argument("config_file", type=click.Path(exists=True))
-@click.argument(
-    "output-dir", type=click.Path(file_okay=False, exists=False), default="."
-)
-def create(csv_path: str, config_file: str, output_dir: str) -> str:
+@click.argument("output_path", type=click.Path(exists=False))
+def create(csv_path: str, config_file: str, output_path: str) -> str:
     config = load_config(config_file)
     used_kwargs = config.params.model_dump()
     # Handle response_model unpacking if present in config
@@ -166,9 +164,15 @@ def create(csv_path: str, config_file: str, output_dir: str) -> str:
         **used_kwargs,
     )
 
-    os.makedirs(output_dir, exist_ok=True)
-    batch_id = str(uuid4().hex)
-    output_file = os.path.join(output_dir, f"batch_{batch_id}.jsonl")
+    if os.path.isdir(output_path):
+        os.makedirs(output_path, exist_ok=True)
+        batch_id = str(uuid4().hex)
+        output_file = os.path.join(output_path, f"batch_{batch_id}.jsonl")
+    else:
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+        output_file = output_path
 
     with open(output_file, "w", encoding="utf-8") as f:
         for item in batch_content:
