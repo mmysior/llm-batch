@@ -5,7 +5,7 @@ import pandas as pd
 import yaml
 from pydantic import BaseModel
 
-from batch_cli.models.schemas import BatchConfig, OutputModel
+from batch_cli.models.schemas import Config, OutputModel
 
 
 def load_jsonl(file_path: str) -> list[dict]:
@@ -30,7 +30,7 @@ def convert_to_df(models: List[OutputModel]) -> pd.DataFrame:
     return pd.DataFrame([m.model_dump() for m in models])
 
 
-def load_config(config_file: str) -> BatchConfig:
+def load_config(config_file: str) -> Config:
     with open(config_file, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
-    return BatchConfig(**config)
+    return Config(**config)

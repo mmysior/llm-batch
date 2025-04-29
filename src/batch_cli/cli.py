@@ -23,11 +23,6 @@ from batch_cli.utils.general import (
 )
 
 load_dotenv()
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler()],
-)
 
 logger = logging.getLogger(__name__)
 
@@ -69,25 +64,34 @@ def run_anthropic(file_path: str) -> None:
 @click.option(
     "--output-dir", type=click.Path(file_okay=False, exists=True), default="."
 )
-def run(file_path: str, interval: int, output_dir: str) -> None:
-    """
-    Run a batch of OpenAI requests from a JSONL file with Ollama and save the responses to an output file.
-    Use --interval to control how often results are written.
-    """
-    batch_id = str(uuid4().hex)
-    output_path = os.path.join(output_dir, f"batch_{batch_id}_output.jsonl")
-    responses = []
-    count = 0
+@click.option(
+    "--verbose", "-v", is_flag=True, default=False, help="Enable verbose logging"
+)
+def run(file_path: str, interval: int, output_dir: str, verbose: bool) -> None:
+    if verbose:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            handlers=[logging.StreamHandler()],
+        )
+    else:
+        logging.basicConfig(
+            level=logging.WARNING,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            handlers=[logging.StreamHandler()],
+        )
 
-    # Get total count for tqdm
-    total_items = sum(1 for _ in load_jsonl_generator(file_path))
+    batch_id: str = str(uuid4().hex)
+    output_path: str = os.path.join(output_dir, f"batch_{batch_id}_output.jsonl")
+    responses: list = []
+    count: int = 0
+
+    total_items: int = sum(1 for _ in load_jsonl_generator(file_path))
 
     logger.info("Starting batch %s", batch_id)
 
-    # Create progress bar
     pbar = tqdm(total=total_items, desc="Processing batch", unit="requests")
 
-    # Re-open the file for actual processing
     for item in load_jsonl_generator(file_path):
         request = OpenAIBatch(**item)
         response = process_request(request, batch_id)
@@ -95,13 +99,11 @@ def run(file_path: str, interval: int, output_dir: str) -> None:
         count += 1
         pbar.update(1)
 
-        # Save in batches based on the interval
         if count % interval == 0:
             append_to_jsonl(responses, output_path)
-            responses = []  # Clear memory after saving
+            responses = []
             pbar.set_description(f"Processing batch (saved {count} responses)")
 
-    # Save any remaining responses
     if responses:
         append_to_jsonl(responses, output_path)
 
@@ -126,15 +128,29 @@ def parse(input_path: str, output_dir: str) -> str:
 @click.command(name="create")
 @click.argument("csv_path", type=click.Path(exists=True))
 @click.argument("config_file", type=click.Path(exists=True))
-@click.argument(
-    "output-dir", type=click.Path(file_okay=False, exists=False), default="."
-)
-def create(csv_path: str, config_file: str, output_dir: str) -> str:
-    """
-    Create a batch .jsonl file from a CSV file using the specified configuration.
-    """
+@click.argument("output_path", type=click.Path(exists=False))
+def create(csv_path: str, config_file: str, output_path: str) -> str:
     config = load_config(config_file)
-    used_kwargs = config.kwargs or {}
+    used_kwargs = config.params.model_dump()
+    # Handle response_model unpacking if present in config
+    if config.json_schema:
+        if config.format == "openai":
+            used_kwargs["response_format"] = {
+                "type": "json_schema",
+                "json_schema": config.json_schema,
+            }
+        elif config.format == "anthropic":
+            used_kwargs["tools"] = [
+                {
+                    "name": config.json_schema.get("name", "response_model"),
+                    "description": "Respond with a JSON object describing an action with its positive and negative effects.",
+                    "input_schema": config.json_schema.get("schema", {}),
+                }
+            ]
+            used_kwargs["tool_choice"] = {
+                "type": "tool",
+                "name": config.json_schema.get("name", "response_model"),
+            }
 
     with open(csv_path, "r", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -142,23 +158,22 @@ def create(csv_path: str, config_file: str, output_dir: str) -> str:
 
     batch_content = create_batch(
         questions=questions,
-        model=config.model,
         format=config.format,
-        temperature=config.temperature,
-        max_tokens=config.max_tokens,
         n_answers=config.n_answers,
-        system_message=config.system_message,
+        system_message=getattr(config, "system_message", None),
         **used_kwargs,
     )
 
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
+    if os.path.isdir(output_path):
+        os.makedirs(output_path, exist_ok=True)
+        batch_id = str(uuid4().hex)
+        output_file = os.path.join(output_path, f"batch_{batch_id}.jsonl")
+    else:
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+        output_file = output_path
 
-    # Generate a unique file name for the batch
-    batch_id = str(uuid4().hex)
-    output_file = os.path.join(output_dir, f"batch_{batch_id}.jsonl")
-
-    # Save the batch to a JSONL file
     with open(output_file, "w", encoding="utf-8") as f:
         for item in batch_content:
             f.write(json.dumps(item.model_dump(), ensure_ascii=False) + "\n")

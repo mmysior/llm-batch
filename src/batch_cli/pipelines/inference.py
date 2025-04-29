@@ -1,27 +1,17 @@
 from uuid import uuid4
 
-from openai import OpenAI
-
 from batch_cli.models.schemas import BatchResponse, OpenAIBatch, Response
-
-
-def get_ollama_client() -> OpenAI:
-    return OpenAI(
-        base_url="http://localhost:11434/v1/",
-        api_key="ollama",
-    )
+from batch_cli.services.openai_service import OpenAIService
 
 
 def process_request(input: OpenAIBatch, batch_id: str, **kwargs) -> BatchResponse:
-    client: OpenAI = get_ollama_client()
+    openai_service = OpenAIService()
     response: Response | None = None
     error: str | None = None
-    model: str = kwargs["model"] if "model" in kwargs else input.body["model"]
+    if "model" in kwargs:
+        input.body.model = kwargs["model"]
     try:
-        api_response = client.chat.completions.create(
-            messages=input.body["messages"],
-            model=model,
-        )
+        api_response = openai_service.create_completion(**input.body.model_dump())
         status_code = 200 if api_response.choices[0].finish_reason == "stop" else 500
         response = Response(
             status_code=status_code,

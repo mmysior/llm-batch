@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 type OptionalParams = Dict[str, Any]
 
 
-class Message(BaseModel):
+class MessageModel(BaseModel):
     role: str
     content: Union[str, List[Dict[str, Any]]]
 
@@ -24,11 +24,21 @@ class BatchResponse(BaseModel):
     error: Optional[Any] = None
 
 
+class Body(BaseModel):
+    messages: List[MessageModel]
+    model: str
+    temperature: float
+    max_tokens: int
+
+    class Config:
+        extra = "allow"
+
+
 class OpenAIBatch(BaseModel):
     custom_id: str
     method: Literal["POST"] = "POST"
     url: str = "/v1/chat/completions"
-    body: Dict[str, Any]
+    body: Body
 
 
 class AnthropicBatch(BaseModel):
@@ -53,21 +63,28 @@ class BatchConfig(BaseModel):
     max_tokens: int
     n_answers: int = 1
     system_message: Optional[str] = None
+    response_model: Optional[dict] = None
     kwargs: Optional[OptionalParams] = None
+
+
+class Parameters(BaseModel):
+    model: str
+    temperature: float
+    max_tokens: int
+
+    class Config:
+        extra = "allow"
+
+
+class Config(BaseModel):
+    format: Literal["openai", "anthropic"]
+    params: Parameters
+    n_answers: int = 1
+    system_message: Optional[str] = None
+    json_schema: Optional[dict] = None
 
 
 class Question(BaseModel):
     question_id: str
     question: str
     image_path: Optional[str] = None
-
-
-class Body(BaseModel):
-    model: str
-    messages: List[Message]
-    max_tokens: int
-    temperature: float
-
-    # Accept any additional fields
-    class Config:
-        extra = "allow"
