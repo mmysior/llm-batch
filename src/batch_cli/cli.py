@@ -8,6 +8,7 @@ import click
 from anthropic import Anthropic
 from anthropic.types.messages.batch_create_params import Request
 from dotenv import load_dotenv
+from tqdm import tqdm
 
 from batch_cli.models.schemas import OpenAIBatch, Question
 from batch_cli.pipelines.inference import process_request
@@ -78,23 +79,33 @@ def run(file_path: str, interval: int, output_dir: str) -> None:
     responses = []
     count = 0
 
+    # Get total count for tqdm
+    total_items = sum(1 for _ in load_jsonl_generator(file_path))
+
     logger.info("Starting batch %s", batch_id)
+
+    # Create progress bar
+    pbar = tqdm(total=total_items, desc="Processing batch", unit="requests")
+
+    # Re-open the file for actual processing
     for item in load_jsonl_generator(file_path):
         request = OpenAIBatch(**item)
         response = process_request(request, batch_id)
         responses.append(response)
         count += 1
+        pbar.update(1)
 
         # Save in batches based on the interval
         if count % interval == 0:
             append_to_jsonl(responses, output_path)
             responses = []  # Clear memory after saving
-            logger.info("Saved %d responses to %s", count, output_path)
+            pbar.set_description(f"Processing batch (saved {count} responses)")
 
     # Save any remaining responses
     if responses:
         append_to_jsonl(responses, output_path)
 
+    pbar.close()
     logger.info("Results saved to %s", output_path)
 
 
