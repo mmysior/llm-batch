@@ -1,14 +1,9 @@
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional
 
 from openai.types.chat.chat_completion import ChatCompletion
 from pydantic import BaseModel, Field
 
 type OptionalParams = Dict[str, Any]
-
-
-class MessageModel(BaseModel):
-    role: str
-    content: Union[str, List[Dict[str, Any]]]
 
 
 class Response(BaseModel):
@@ -25,7 +20,7 @@ class BatchResponse(BaseModel):
 
 
 class Body(BaseModel):
-    messages: List[MessageModel]
+    messages: List[Dict[str, Any]]
     model: str
     temperature: float
     max_tokens: int
@@ -43,7 +38,7 @@ class OpenAIBatch(BaseModel):
 
 class AnthropicBatch(BaseModel):
     custom_id: str
-    params: Dict[str, Any]
+    params: Body
 
 
 class OutputModel(BaseModel):

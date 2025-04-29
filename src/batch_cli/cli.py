@@ -34,8 +34,7 @@ def cli():
     """
     Batch CLI: A command-line tool for running and managing batch inference jobs
     """
-    load_dotenv(find_dotenv())
-    pass
+    load_dotenv(find_dotenv(usecwd=True))
 
 
 # ------------------------------------------------------------

@@ -1,11 +1,11 @@
-from typing import List
+from typing import Any, Dict, List
 
 import instructor
 from dotenv import load_dotenv
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
 
-from batch_cli.models.schemas import Body, MessageModel
+from batch_cli.models.schemas import Body
 
 load_dotenv()
 
@@ -27,7 +27,7 @@ class OpenAIService:
         return client
 
     def create_completion(
-        self, messages: List[MessageModel], **kwargs
+        self, messages: List[Dict[str, Any]], **kwargs
     ) -> ChatCompletion:
         completion_params = Body(messages=messages, **kwargs)
         return self.client.chat.completions.create(**completion_params.model_dump())

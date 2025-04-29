@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 from batch_cli.models.schemas import AnthropicBatch, OpenAIBatch, Question
-from batch_cli.utils.messages import create_anthropic_messages, create_openai_messages
+from batch_cli.utils.messages import create_anthropic_body, create_openai_body
 
 BatchFile = List[Union[OpenAIBatch, AnthropicBatch]]
 
@@ -16,9 +16,9 @@ def create_batch(
 ) -> BatchFile:
     batch: BatchFile = []
     if format == "openai":
-        message_func = create_openai_messages
+        message_func = create_openai_body
     elif format == "anthropic":
-        message_func = create_anthropic_messages
+        message_func = create_anthropic_body
     else:
         raise ValueError(f"Invalid format: {format}")
 
@@ -26,8 +26,7 @@ def create_batch(
         for i in range(n_answers):
             custom_id = f"{question.question_id}_rep{i:02d}"
             image_path = Path(question.image_path) if question.image_path else None
-            messages = message_func(question.question, image_path, system_message)
-            body = {"messages": messages, **kwargs}
+            body = message_func(question.question, image_path, system_message, **kwargs)
             if format == "openai":
                 batch.append(OpenAIBatch(custom_id=custom_id, body=body))
             else:
