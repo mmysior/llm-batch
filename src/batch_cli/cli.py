@@ -130,11 +130,22 @@ def parse(input_path: str, output_dir: str) -> str:
     "output-dir", type=click.Path(file_okay=False, exists=False), default="."
 )
 def create(csv_path: str, config_file: str, output_dir: str) -> str:
-    """
-    Create a batch .jsonl file from a CSV file using the specified configuration.
-    """
     config = load_config(config_file)
-    used_kwargs = config.kwargs or {}
+    used_kwargs = dict(config.kwargs) if config.kwargs else {}
+
+    # Handle response_model unpacking if present in config
+    if config.response_model:
+        if config.format == "openai":
+            response_format = config.response_model.get("response_format")
+            if response_format:
+                used_kwargs["response_format"] = response_format
+        elif config.format == "anthropic":
+            tools = config.response_model.get("tools")
+            tool_choice = config.response_model.get("tool_choice")
+            if tools:
+                used_kwargs["tools"] = tools
+            if tool_choice:
+                used_kwargs["tool_choice"] = tool_choice
 
     with open(csv_path, "r", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -151,14 +162,10 @@ def create(csv_path: str, config_file: str, output_dir: str) -> str:
         **used_kwargs,
     )
 
-    # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
-
-    # Generate a unique file name for the batch
     batch_id = str(uuid4().hex)
     output_file = os.path.join(output_dir, f"batch_{batch_id}.jsonl")
 
-    # Save the batch to a JSONL file
     with open(output_file, "w", encoding="utf-8") as f:
         for item in batch_content:
             f.write(json.dumps(item.model_dump(), ensure_ascii=False) + "\n")
