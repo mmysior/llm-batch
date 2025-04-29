@@ -7,7 +7,7 @@ from uuid import uuid4
 import click
 from anthropic import Anthropic
 from anthropic.types.messages.batch_create_params import Request
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from tqdm import tqdm
 
 from batch_cli.models.schemas import OpenAIBatch, Question
@@ -22,8 +22,6 @@ from batch_cli.utils.general import (
     load_jsonl_generator,
 )
 
-load_dotenv()
-
 logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------
@@ -36,6 +34,7 @@ def cli():
     """
     Batch CLI: A command-line tool for running and managing batch inference jobs
     """
+    load_dotenv(find_dotenv())
     pass
 
 
@@ -50,7 +49,7 @@ def run_anthropic(file_path: str) -> None:
     """
     Run a batch of Anthropic requests from a JSONL file.
     """
-    anthropic_client = Anthropic()
+    anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
     requests = [Request(**item) for item in load_jsonl(file_path)]
     message_batch = anthropic_client.messages.batches.create(requests=requests)
 
