@@ -57,18 +57,24 @@ class BatchConfig(BaseModel):
     kwargs: Optional[OptionalParams] = None
 
 
+class Parameters(BaseModel):
+    model: str
+    temperature: float
+    max_tokens: int
+
+    class Config:
+        extra = "allow"
+
+
+class Config(BaseModel):
+    format: Literal["openai", "anthropic"]
+    params: Parameters
+    n_answers: int = 1
+    system_message: Optional[str] = None
+    json_schema: Optional[dict] = None
+
+
 class Question(BaseModel):
     question_id: str
     question: str
     image_path: Optional[str] = None
-
-
-class Body(BaseModel):
-    model: str
-    messages: List[Message]
-    max_tokens: int
-    temperature: float
-
-    # Accept any additional fields
-    class Config:
-        extra = "allow"

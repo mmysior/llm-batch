@@ -1,75 +1,32 @@
-# Batch CLI Configuration
-
 # Basic configuration
 format: openai  # Options: "openai" or "anthropic"
-n_answers: 5    # Number of responses to generate per question
+# n_answers: 5    # Number of responses to generate per question
 
-# Model configuration
-model: gpt-4o-mini
-temperature: 0.7
-max_tokens: 8196 # Maximum number of tokens to generate, required by Anthropic
+# Generation parameters
+params:
+  model: gemma2:2b
+  temperature: 0.7
+  max_tokens: 8196 # Maximum number of tokens to generate, required by Anthropic
+#  top_p: 0.9
+#  frequency_penalty: 0.0
+#  presence_penalty: 0.0
 
-# System message - multiline format for complex prompts
+# System message to include in the prompt
 # system_message: |
-#   You are a helpful assistant. 
-#   Answer questions clearly and concisely.
-#   When code is requested, provide well-structured, type-hinted solutions.
-
-# Response Model for structured output
-response_model:
-  # Format for OpenAI
-  response_format:
-    type: json_schema
-    json_schema:
-      name: response_model
-      schema:
-        type: object
-        properties:
-          action:
-            type: string
-            description: Short description of the applied action
-          positive_effect:
-            type: string
-            description: The positive effect of the action
-          negative_effect:
-            type: string
-            description: The negative effect of the action
-        required:
-          - action
-          - positive_effect
-          - negative_effect
-        additionalProperties: false
-      strict: true
-
-  # Format for Anthropic
-  tools:
-    - name: response_model
-      description: Respond with a JSON object describing an action with its positive and negative effects.
-      input_schema:
-        type: object
-        properties:
-          action:
-            type: string
-            description: Short description of the applied action
-          positive_effect:
-            type: string
-            description: The positive effect of the action
-          negative_effect:
-            type: string
-            description: The negative effect of the action
-        required:
-          - action
-          - positive_effect
-          - negative_effect
-        additionalProperties: false
-  tool_choice:
-    type: tool
-    name: response_model
 
 
-
-# Optional parameters passed directly to the API
-# kwargs:
-#   top_p: 0.9
-#   frequency_penalty: 0.0
-#   presence_penalty: 0.0
+# JSON Schema for structured output
+json_schema:
+  name: response_model
+  schema:
+    type: object
+    properties:
+      thinking:
+        type: string
+      answer:
+        type: string
+    required:
+      - thinking
+      - answer
+    additionalProperties: false
+  strict: true

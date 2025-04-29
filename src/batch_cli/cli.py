@@ -23,11 +23,6 @@ from batch_cli.utils.general import (
 )
 
 load_dotenv()
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler()],
-)
 
 logger = logging.getLogger(__name__)
 
@@ -69,11 +64,27 @@ def run_anthropic(file_path: str) -> None:
 @click.option(
     "--output-dir", type=click.Path(file_okay=False, exists=True), default="."
 )
-def run(file_path: str, interval: int, output_dir: str) -> None:
+@click.option(
+    "--verbose", "-v", is_flag=True, default=False, help="Enable verbose logging"
+)
+def run(file_path: str, interval: int, output_dir: str, verbose: bool) -> None:
     """
     Run a batch of OpenAI requests from a JSONL file with Ollama and save the responses to an output file.
     Use --interval to control how often results are written.
     """
+    if verbose:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            handlers=[logging.StreamHandler()],
+        )
+    else:
+        logging.basicConfig(
+            level=logging.WARNING,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            handlers=[logging.StreamHandler()],
+        )
+
     batch_id = str(uuid4().hex)
     output_path = os.path.join(output_dir, f"batch_{batch_id}_output.jsonl")
     responses = []
@@ -131,21 +142,26 @@ def parse(input_path: str, output_dir: str) -> str:
 )
 def create(csv_path: str, config_file: str, output_dir: str) -> str:
     config = load_config(config_file)
-    used_kwargs = dict(config.kwargs) if config.kwargs else {}
-
+    used_kwargs = config.params.model_dump()
     # Handle response_model unpacking if present in config
-    if config.response_model:
+    if config.json_schema:
         if config.format == "openai":
-            response_format = config.response_model.get("response_format")
-            if response_format:
-                used_kwargs["response_format"] = response_format
+            used_kwargs["response_format"] = {
+                "type": "json_schema",
+                "json_schema": config.json_schema,
+            }
         elif config.format == "anthropic":
-            tools = config.response_model.get("tools")
-            tool_choice = config.response_model.get("tool_choice")
-            if tools:
-                used_kwargs["tools"] = tools
-            if tool_choice:
-                used_kwargs["tool_choice"] = tool_choice
+            used_kwargs["tools"] = [
+                {
+                    "name": config.json_schema.get("name", "response_model"),
+                    "description": "Respond with a JSON object describing an action with its positive and negative effects.",
+                    "input_schema": config.json_schema.get("schema", {}),
+                }
+            ]
+            used_kwargs["tool_choice"] = {
+                "type": "tool",
+                "name": config.json_schema.get("name", "response_model"),
+            }
 
     with open(csv_path, "r", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file)
@@ -153,12 +169,9 @@ def create(csv_path: str, config_file: str, output_dir: str) -> str:
 
     batch_content = create_batch(
         questions=questions,
-        model=config.model,
         format=config.format,
-        temperature=config.temperature,
-        max_tokens=config.max_tokens,
         n_answers=config.n_answers,
-        system_message=config.system_message,
+        system_message=getattr(config, "system_message", None),
         **used_kwargs,
     )
 
