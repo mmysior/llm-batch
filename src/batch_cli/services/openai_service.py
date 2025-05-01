@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
 
-from batch_cli.models.schemas import Body
-
 load_dotenv()
 
 type LLMClient = OpenAI | instructor.Instructor
@@ -29,5 +27,17 @@ class OpenAIService:
     def create_completion(
         self, messages: List[Dict[str, Any]], **kwargs
     ) -> ChatCompletion:
-        completion_params = Body(messages=messages, **kwargs)
-        return self.client.chat.completions.create(**completion_params.model_dump())
+        completion_params = {
+            "messages": messages,
+            **kwargs,
+        }
+        return self.client.chat.completions.create(**completion_params)
+
+
+if __name__ == "__main__":
+    openai_service = OpenAIService()
+    response = openai_service.create_completion(
+        messages=[{"role": "user", "content": "Hello, how are you?"}],
+        model="gemma2:2b",
+    )
+    print(response)
