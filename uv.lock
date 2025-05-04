@@ -106,41 +106,6 @@ wheels = [
 ]
 
 [[package]]
-name = "batch-cli"
-version = "0.1.7"
-source = { editable = "." }
-dependencies = [
-    { name = "anthropic" },
-    { name = "click" },
-    { name = "instructor" },
-    { name = "openai" },
-    { name = "pandas" },
-    { name = "pillow" },
-    { name = "python-dotenv" },
-    { name = "pyyaml" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "anthropic", specifier = ">=0.50.0" },
-    { name = "click", specifier = ">=8.1.8" },
-    { name = "instructor", specifier = ">=1.7.9" },
-    { name = "openai", specifier = ">=1.76.0" },
-    { name = "pandas", specifier = ">=2.2.3" },
-    { name = "pillow", specifier = ">=11.2.1" },
-    { name = "python-dotenv", specifier = ">=1.1.0" },
-    { name = "pyyaml", specifier = ">=6.0.2" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.3.5" }]
-
-[[package]]
 name = "certifi"
 version = "2025.4.26"
 source = { registry = "https://pypi.org/simple" }
@@ -364,6 +329,41 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/4c/c02408042e6a7605ec063daed138e07b982fdb98467deaaf1c90950cf2c6/jiter-0.8.2-cp313-cp313t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b2dd880785088ff2ad21ffee205e58a8c1ddabc63612444ae41e5e4b321b39c0", size = 342875, upload_time = "2024-12-09T18:10:25.553Z" },
     { url = "https://files.pythonhosted.org/packages/91/61/c80ef80ed8a0a21158e289ef70dac01e351d929a1c30cb0f49be60772547/jiter-0.8.2-cp313-cp313t-win_amd64.whl", hash = "sha256:3ac9f578c46f22405ff7f8b1f5848fb753cc4b8377fbec8470a7dc3997ca7566", size = 202374, upload_time = "2024-12-09T18:10:26.958Z" },
 ]
+
+[[package]]
+name = "llm-batch"
+version = "0.1.7"
+source = { editable = "." }
+dependencies = [
+    { name = "anthropic" },
+    { name = "click" },
+    { name = "instructor" },
+    { name = "openai" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", specifier = ">=0.50.0" },
+    { name = "click", specifier = ">=8.1.8" },
+    { name = "instructor", specifier = ">=1.7.9" },
+    { name = "openai", specifier = ">=1.76.0" },
+    { name = "pandas", specifier = ">=2.2.3" },
+    { name = "pillow", specifier = ">=11.2.1" },
+    { name = "python-dotenv", specifier = ">=1.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8.3.5" }]
 
 [[package]]
 name = "markdown-it-py"
