@@ -1,7 +1,7 @@
 [project]
 name = "batch-cli"
-version = "0.1.6"
-description = "Add your description here"
+version = "0.1.7"
+description = "Batch CLI tool for running batch inference with local LLMs"
 readme = "README.md"
 authors = [
     { name = "mmysior", email = "mysior.marek@gmail.com" }
@@ -29,3 +29,7 @@ batch-cli = "batch_cli.cli:cli"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[project.urls]
+Homepage = "https://github.com/mmysior/batch-cli"
+Issues = "https://github.com/mmysior/batch-cli/issues"
