@@ -1,4 +1,4 @@
-# batch-cli
+# Batch CLI
 
 A command-line tool for running and managing batch inference jobs with LLM providers (OpenAI and Anthropic).
 
@@ -29,7 +29,7 @@ The `batch-cli` tool offers several commands to create, run, and parse batches o
 ### Available Commands
 
 - `create`: Create a batch of requests from a CSV or JSON file
-- `run`: Run a batch of requests
+- `run`: Run a batch of requests through Ollama (requires Ollama installation with the model specified in your config)
 - `run-anthropic`: Run a batch of Anthropic requests directly. Requires an `ANTHROPIC_API_KEY` environmental variable.
 - `parse`: Parse and convert batch results to CSV
 
@@ -59,7 +59,11 @@ batch-cli run FILE_PATH [--interval INTEGER] [--output-dir DIRECTORY] [--verbose
 - `--output-dir`: Directory to save the output (default: current directory)
 - `--verbose`: Enable verbose logging
 
-This command processes the batch requests and saves the responses to a JSONL file.
+This command processes the batch requests through Ollama and saves the responses to a JSONL file.
+
+**Important**: This command requires:
+1. [Ollama](https://ollama.com/) to be installed on your system
+2. The model specified in your config to be downloaded in Ollama `ollama pull <model_name>`
 
 ### Running Anthropic Batches Directly
 
@@ -155,6 +159,10 @@ You can also use a `.env` file in your project directory.
    ```
 4. Run the batch:
    ```bash
+   # Make sure Ollama is installed and the model is downloaded
+   ollama pull <model_name>
+   
+   # Run the batch
    batch-cli run batches/my_batch.jsonl --output-dir results
    ```
 5. Parse the results:
