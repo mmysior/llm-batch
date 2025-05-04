@@ -1,4 +1,4 @@
-# Batch CLI
+# LLM Batch
 
 A command-line tool for running and managing batch inference jobs with LLM providers (OpenAI and Anthropic).
 
@@ -12,19 +12,19 @@ A command-line tool for running and managing batch inference jobs with LLM provi
 # Install uv if you don't have it
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install batch-cli
-uv pip install batch-cli
+# Install llm-batch
+uv pip install llm-batch
 ```
 
 ### Using pip
 
 ```bash
-pip install batch-cli
+pip install llm-batch
 ```
 
 ## Usage
 
-The `batch-cli` tool offers several commands to create, run, and parse batches of LLM inference requests.
+The `llm-batch` tool offers several commands to create, run, and parse batches of LLM inference requests.
 
 ### Available Commands
 
@@ -36,7 +36,7 @@ The `batch-cli` tool offers several commands to create, run, and parse batches o
 ### Creating a Batch
 
 ```bash
-batch-cli create INPUT_PATH CONFIG_FILE OUTPUT_PATH
+llm-batch create INPUT_PATH CONFIG_FILE OUTPUT_PATH
 ```
 
 - `INPUT_PATH`: Path to a CSV or JSON file containing questions
@@ -51,7 +51,7 @@ The input CSV file should have at least two columns:
 ### Running a Batch
 
 ```bash
-batch-cli run FILE_PATH [--interval INTEGER] [--output-dir DIRECTORY] [--verbose]
+llm-batch run FILE_PATH [--interval INTEGER] [--output-dir DIRECTORY] [--verbose]
 ```
 
 - `FILE_PATH`: Path to the JSONL file containing the batch
@@ -68,7 +68,7 @@ This command processes the batch requests through Ollama and saves the responses
 ### Running Anthropic Batches Directly
 
 ```bash
-batch-cli run-anthropic FILE_PATH
+llm-batch run-anthropic FILE_PATH
 ```
 
 - `FILE_PATH`: Path to the JSONL file containing Anthropic requests
@@ -78,7 +78,7 @@ This command uses Anthropic's native batch API.
 ### Parsing Results
 
 ```bash
-batch-cli parse INPUT_PATH [OUTPUT_DIR]
+llm-batch parse INPUT_PATH [OUTPUT_DIR]
 ```
 
 - `INPUT_PATH`: Path to the JSONL file containing batch responses
@@ -155,7 +155,7 @@ You can also use a `.env` file in your project directory.
 2. Create a config file (`config.yaml`)
 3. Create a batch file:
    ```bash
-   batch-cli create questions.csv config.yaml batches/my_batch.jsonl
+   llm-batch create questions.csv config.yaml batches/my_batch.jsonl
    ```
 4. Run the batch:
    ```bash
@@ -163,11 +163,11 @@ You can also use a `.env` file in your project directory.
    ollama pull <model_name>
    
    # Run the batch
-   batch-cli run batches/my_batch.jsonl --output-dir results
+   llm-batch run batches/my_batch.jsonl --output-dir results
    ```
 5. Parse the results:
    ```bash
-   batch-cli parse results/batch_*.jsonl results
+   llm-batch parse results/batch_*.jsonl results
    ```
 
 ## License
