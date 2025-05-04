@@ -115,6 +115,9 @@ def run(file_path: str, interval: int, output_dir: str, verbose: bool) -> None:
     "output_dir", type=click.Path(file_okay=False, exists=False), default="."
 )
 def parse(input_path: str, output_dir: str) -> str:
+    """
+    Parse a batch of responses from a JSONL file and save the results as a CSV file.
+    """
     models = parse_batch_jsonl(input_path)
     df = convert_to_df(models)
     input_filename = os.path.splitext(os.path.basename(input_path))[0]
@@ -128,6 +131,10 @@ def parse(input_path: str, output_dir: str) -> str:
 @click.argument("config_file", type=click.Path(exists=True))
 @click.argument("output_path", type=click.Path(exists=False))
 def create(input_path: str, config_file: str, output_path: str) -> str:
+    """
+    Create a batch of requests from a CSV file with question_id and question columns and save the results as a JSONL file.
+    The config file must be in .csv format.
+    """
     config = load_config(config_file)
     used_kwargs = config.params.model_dump()
     # Handle response_model unpacking if present in config
