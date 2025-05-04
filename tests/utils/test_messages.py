@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from batch_cli.models.schemas import Body
-from batch_cli.utils.messages import create_anthropic_body, create_openai_body
+from llm_batch.models.schemas import Body
+from llm_batch.utils.messages import create_anthropic_body, create_openai_body
 
 
 @pytest.fixture

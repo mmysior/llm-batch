@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from batch_cli.models.schemas import AnthropicBatch, OpenAIBatch, Question
-from batch_cli.pipelines.pre import create_batch
+from llm_batch.models.schemas import AnthropicBatch, OpenAIBatch, Question
+from llm_batch.pipelines.pre import create_batch
 
 
 @pytest.fixture

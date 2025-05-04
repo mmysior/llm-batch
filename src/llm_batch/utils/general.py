@@ -5,7 +5,7 @@ import pandas as pd
 import yaml
 from pydantic import BaseModel
 
-from batch_cli.models.schemas import Config, OutputModel
+from llm_batch.models.schemas import Config, OutputModel
 
 
 def load_jsonl(file_path: str) -> list[dict]:

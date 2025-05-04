@@ -1,10 +1,10 @@
 [project]
-name = "batch-cli"
+name = "llm-batch"
 version = "0.1.7"
 description = "Batch CLI tool for running batch inference with local LLMs"
 readme = "README.md"
 authors = [
-    { name = "mmysior", email = "mysior.marek@gmail.com" }
+    { name = "Marek Piotr Mysior" }
 ]
 requires-python = ">=3.13"
 dependencies = [
@@ -24,12 +24,12 @@ dev = [
 ]
 
 [project.scripts]
-batch-cli = "batch_cli.cli:cli"
+llm-batch = "llm_batch.cli:cli"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.urls]
-Homepage = "https://github.com/mmysior/batch-cli"
-Issues = "https://github.com/mmysior/batch-cli/issues"
+Homepage = "https://github.com/mmysior/llm-batch"
+Issues = "https://github.com/mmysior/llm-batch/issues"

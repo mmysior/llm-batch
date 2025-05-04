@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from batch_cli.utils.images import encode_image, get_base64_image
+from llm_batch.utils.images import encode_image, get_base64_image
 
 
 @pytest.fixture

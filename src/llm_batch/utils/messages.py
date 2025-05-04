@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Optional
 
-from batch_cli.models.schemas import Body
-from batch_cli.utils.images import encode_image
+from llm_batch.models.schemas import Body
+from llm_batch.utils.images import encode_image
 
 
 def create_openai_body(

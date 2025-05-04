@@ -1,5 +1,5 @@
-from batch_cli.models.schemas import OutputModel
-from batch_cli.utils.general import load_jsonl
+from llm_batch.models.schemas import OutputModel
+from llm_batch.utils.general import load_jsonl
 
 
 def parse_anthropic_jsonl(file_path: str) -> list[OutputModel]:

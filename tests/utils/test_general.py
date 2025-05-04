@@ -6,8 +6,8 @@ import pandas as pd
 import pytest
 from pydantic import BaseModel
 
-from batch_cli.models.schemas import Config, OutputModel
-from batch_cli.utils.general import (
+from llm_batch.models.schemas import Config, OutputModel
+from llm_batch.utils.general import (
     append_to_jsonl,
     convert_to_df,
     load_config,

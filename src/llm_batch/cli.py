@@ -10,11 +10,11 @@ from anthropic.types.messages.batch_create_params import Request
 from dotenv import find_dotenv, load_dotenv
 from tqdm import tqdm
 
-from batch_cli.models.schemas import OpenAIBatch, Question
-from batch_cli.pipelines.inference import process_request
-from batch_cli.pipelines.post import parse_batch_jsonl
-from batch_cli.pipelines.pre import create_batch
-from batch_cli.utils.general import (
+from llm_batch.models.schemas import OpenAIBatch, Question
+from llm_batch.pipelines.inference import process_request
+from llm_batch.pipelines.post import parse_batch_jsonl
+from llm_batch.pipelines.pre import create_batch
+from llm_batch.utils.general import (
     append_to_jsonl,
     convert_to_df,
     load_config,

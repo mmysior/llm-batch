@@ -5,8 +5,8 @@ from openai.types.chat.chat_completion import ChatCompletion, Choice
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.completion_usage import CompletionUsage
 
-from batch_cli.models.schemas import Body, OpenAIBatch
-from batch_cli.pipelines.inference import process_request
+from llm_batch.models.schemas import Body, OpenAIBatch
+from llm_batch.pipelines.inference import process_request
 
 
 @pytest.fixture
