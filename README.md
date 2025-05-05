@@ -1,4 +1,4 @@
-# LLM Batch
+# 📦 LLM Batch
 
 A command-line tool for running and managing batch inference jobs with LLM providers (OpenAI and Anthropic).
 
@@ -9,10 +9,6 @@ A command-line tool for running and managing batch inference jobs with LLM provi
 [uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver.
 
 ```bash
-# Install uv if you don't have it
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install llm-batch
 uv pip install llm-batch
 ```
 
