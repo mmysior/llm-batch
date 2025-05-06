@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from llm_batch.models.schemas import AnthropicBatch, OpenAIBatch, Question
-from llm_batch.pipelines.pre import create_batch
+from llmbatch.models.schemas import AnthropicBatch, OpenAIBatch, Question
+from llmbatch.pipelines.pre import create_batch
 
 
 @pytest.fixture
@@ -23,8 +23,8 @@ def sample_questions():
 def mock_create_body_funcs():
     """Mock both message creation functions to return predictable values"""
     with (
-        patch("batch_cli.pipelines.pre.create_openai_body") as mock_openai,
-        patch("batch_cli.pipelines.pre.create_anthropic_body") as mock_anthropic,
+        patch("llmbatch.pipelines.pre.create_openai_body") as mock_openai,
+        patch("llmbatch.pipelines.pre.create_anthropic_body") as mock_anthropic,
     ):
         # Setup mock return values with all required fields
         mock_openai.return_value = {

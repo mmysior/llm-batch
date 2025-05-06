@@ -2,14 +2,12 @@ import json
 from pathlib import Path
 from typing import List
 
-import pandas as pd
 import pytest
 from pydantic import BaseModel
 
-from llm_batch.models.schemas import Config, OutputModel
-from llm_batch.utils.general import (
+from llmbatch.models.schemas import Config
+from llmbatch.utils.general import (
     append_to_jsonl,
-    convert_to_df,
     load_config,
     load_jsonl,
     load_jsonl_generator,
@@ -102,43 +100,6 @@ def test_append_to_jsonl(tmp_path):
     assert len(lines) == 2
     assert json.loads(lines[0]) == {"name": "test1", "value": 123}
     assert json.loads(lines[1]) == {"name": "test2", "value": 456}
-
-
-def test_convert_to_df():
-    """Test converting a list of models to a DataFrame."""
-    models = [
-        OutputModel(
-            custom_id="id1",
-            type="completion",
-            model="gpt-4",
-            response="Hello",
-            input_tokens=10,
-            output_tokens=1,
-        ),
-        OutputModel(
-            custom_id="id2",
-            type="completion",
-            model="gpt-4",
-            response="World",
-            input_tokens=10,
-            output_tokens=1,
-        ),
-    ]
-
-    df = convert_to_df(models)
-
-    assert isinstance(df, pd.DataFrame)
-    assert len(df) == 2
-    assert list(df.columns) == [
-        "custom_id",
-        "type",
-        "model",
-        "response",
-        "input_tokens",
-        "output_tokens",
-    ]
-    assert df.iloc[0]["custom_id"] == "id1"
-    assert df.iloc[1]["custom_id"] == "id2"
 
 
 def test_load_config(sample_yaml_file):

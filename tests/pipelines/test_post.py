@@ -5,8 +5,8 @@ from typing import List
 
 import pytest
 
-from llm_batch.models.schemas import OutputModel
-from llm_batch.pipelines.post import parse_batch_jsonl
+from llmbatch.models.schemas import OutputModel
+from llmbatch.pipelines.post import parse_batch_jsonl
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 from uuid import uuid4
 
-from llm_batch.models.schemas import BatchResponse, OpenAIBatch, Response
-from llm_batch.services.openai_service import OpenAIService
+from llmbatch.models.schemas import BatchResponse, OpenAIBatch, Response
+from llmbatch.services.openai_service import OpenAIService
 
 
 def process_request(input: OpenAIBatch, batch_id: str, **kwargs) -> BatchResponse:
