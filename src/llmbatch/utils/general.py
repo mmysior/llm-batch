@@ -1,11 +1,10 @@
 import json
 from typing import List
 
-import pandas as pd
 import yaml
 from pydantic import BaseModel
 
-from llm_batch.models.schemas import Config, OutputModel
+from llmbatch.models.schemas import Config
 
 
 def load_jsonl(file_path: str) -> list[dict]:
@@ -24,10 +23,6 @@ def append_to_jsonl(responses: List[BaseModel], output_path: str) -> None:
         for response in responses:
             response_dict = response.model_dump()
             f.write(json.dumps(response_dict) + "\n")
-
-
-def convert_to_df(models: List[OutputModel]) -> pd.DataFrame:
-    return pd.DataFrame([m.model_dump() for m in models])
 
 
 def load_config(config_file: str) -> Config:

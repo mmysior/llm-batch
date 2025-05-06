@@ -10,13 +10,12 @@ from anthropic.types.messages.batch_create_params import Request
 from dotenv import find_dotenv, load_dotenv
 from tqdm import tqdm
 
-from llm_batch.models.schemas import OpenAIBatch, Question
-from llm_batch.pipelines.inference import process_request
-from llm_batch.pipelines.post import parse_batch_jsonl
-from llm_batch.pipelines.pre import create_batch
-from llm_batch.utils.general import (
+from llmbatch.models.schemas import OpenAIBatch, Question
+from llmbatch.pipelines.inference import process_request
+from llmbatch.pipelines.post import parse_batch_jsonl
+from llmbatch.pipelines.pre import create_batch
+from llmbatch.utils.general import (
     append_to_jsonl,
-    convert_to_df,
     load_config,
     load_jsonl,
     load_jsonl_generator,
@@ -119,10 +118,25 @@ def parse(input_path: str, output_dir: str) -> str:
     Parse a batch of responses from a JSONL file and save the results as a CSV file.
     """
     models = parse_batch_jsonl(input_path)
-    df = convert_to_df(models)
     input_filename = os.path.splitext(os.path.basename(input_path))[0]
     csv_path = os.path.join(output_dir, f"{input_filename}.csv")
-    df.to_csv(csv_path, index=False, encoding="utf-8", sep=";")
+
+    # Handle empty results
+    if not models:
+        with open(csv_path, "w", encoding="utf-8") as f:
+            f.write("")
+        return f"File saved to {csv_path} (empty results)"
+
+    # Extract field names from the first model
+    fieldnames = list(models[0].model_dump().keys())
+
+    # Write directly to CSV
+    with open(csv_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=";")
+        writer.writeheader()
+        for model in models:
+            writer.writerow(model.model_dump())
+
     return f"File saved to {csv_path}"
 
 

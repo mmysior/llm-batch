@@ -5,15 +5,15 @@ from openai.types.chat.chat_completion import ChatCompletion, Choice
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.completion_usage import CompletionUsage
 
-from llm_batch.models.schemas import Body, OpenAIBatch
-from llm_batch.pipelines.inference import process_request
+from llmbatch.models.schemas import Body, OpenAIBatch
+from llmbatch.pipelines.inference import process_request
 
 
 @pytest.fixture
 def mock_uuid():
     """Mock uuid4 to return a predictable value"""
     fixed_uuid = "test-uuid-12345"
-    with patch("batch_cli.pipelines.inference.uuid4") as mock_uuid:
+    with patch("llmbatch.pipelines.inference.uuid4") as mock_uuid:
         mock_uuid.return_value.hex = fixed_uuid
         yield fixed_uuid
 
@@ -54,7 +54,7 @@ def successful_api_response():
     )
 
 
-@patch("batch_cli.pipelines.inference.OpenAIService")
+@patch("llmbatch.pipelines.inference.OpenAIService")
 def test_process_request_success(
     mock_openai_service_cls, sample_openai_batch, successful_api_response, mock_uuid
 ):
@@ -81,7 +81,7 @@ def test_process_request_success(
     assert result.response.body == successful_api_response
 
 
-@patch("batch_cli.pipelines.inference.OpenAIService")
+@patch("llmbatch.pipelines.inference.OpenAIService")
 def test_process_request_with_model_override(
     mock_openai_service_cls, sample_openai_batch, successful_api_response, mock_uuid
 ):
@@ -104,7 +104,7 @@ def test_process_request_with_model_override(
     assert result.response.status_code == 200
 
 
-@patch("batch_cli.pipelines.inference.OpenAIService")
+@patch("llmbatch.pipelines.inference.OpenAIService")
 def test_process_request_error(mock_openai_service_cls, sample_openai_batch, mock_uuid):
     """Test handling of an error during processing"""
     # Arrange
@@ -127,7 +127,7 @@ def test_process_request_error(mock_openai_service_cls, sample_openai_batch, moc
     assert result.response.body is None
 
 
-@patch("batch_cli.pipelines.inference.OpenAIService")
+@patch("llmbatch.pipelines.inference.OpenAIService")
 def test_process_request_non_stop_finish_reason(
     mock_openai_service_cls, sample_openai_batch, successful_api_response, mock_uuid
 ):

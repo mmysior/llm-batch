@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import List, Optional, Union
 
-from llm_batch.models.schemas import AnthropicBatch, OpenAIBatch, Question
-from llm_batch.utils.messages import create_anthropic_body, create_openai_body
+from llmbatch.models.schemas import AnthropicBatch, OpenAIBatch, Question
+from llmbatch.utils.messages import create_anthropic_body, create_openai_body
 
 BatchFile = List[Union[OpenAIBatch, AnthropicBatch]]
 

@@ -2,13 +2,13 @@ from unittest.mock import patch
 
 import pytest
 
-from llm_batch.models.schemas import Body
-from llm_batch.utils.messages import create_anthropic_body, create_openai_body
+from llmbatch.models.schemas import Body
+from llmbatch.utils.messages import create_anthropic_body, create_openai_body
 
 
 @pytest.fixture
 def mock_encode_image():
-    with patch("batch_cli.utils.messages.encode_image") as mock:
+    with patch("llmbatch.utils.messages.encode_image") as mock:
         mock.return_value = ("image/png", "mock_base64_data")
         yield mock
 
