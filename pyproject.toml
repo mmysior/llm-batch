@@ -1,6 +1,6 @@
 [project]
 name = "llm-batch"
-version = "0.1.7"
+version = "0.1.8"
 description = "Batch CLI tool for running batch inference with local LLMs"
 readme = "README.md"
 authors = [
